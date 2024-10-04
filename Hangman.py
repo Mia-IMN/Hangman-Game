@@ -2,7 +2,7 @@ import random
 from Hangman_art import welcome_image, HANGMANPICS
 from Hangman_wordlist import easy_word_list, medium_word_list, hard_word_list
 
-
+# work on making a list of all the user input so you can check if they've inputted the letter before
 print(welcome_image)
 
 
@@ -27,21 +27,23 @@ def play(level):
     medium = False
     hard = False
 
+    guesses_list = []
+
     # Picks which word list to use based on the user's choice level 
     if level == "easy":
-        current_pick = random.choice(easy_word_list)
+        current_pick = random.choice(easy_word_list).lower()
         show_update = ["_ ", "_ ", "_"]
         printshow_update(3, show_update)
         easy = True
 
     if level == "medium":
-        current_pick = random.choice(medium_word_list)
+        current_pick = random.choice(medium_word_list).lower()
         show_update = ["_ ", "_ ", "_ ", "_ ", "_ "]
         printshow_update(5, show_update)
         medium = True
 
     if level == "hard":
-        current_pick = random.choice(hard_word_list)
+        current_pick = random.choice(hard_word_list).lower()
         show_update = ["_ ", "_ ", "_ ", "_ ", "_ ", "_ ", "_"]
         printshow_update(7, show_update)
         hard = True
@@ -69,47 +71,51 @@ def play(level):
         mini_count = 0
         should_break = False
 
-        for one in show_update:
-            if user_guess == show_update[show_update.index(one)]:
-                print("\nYou've already guessed this letter.\nGuess another!\n")
-                should_break = True
+        # To check if the user guessed a letter they had already guessed
+        if user_guess not in guesses_list:
+            guesses_list.append(user_guess)
+        else:
+            print("\nYou've already guessed this letter.\nGuess another!\n")
+            should_break = True
+
 
         for serial in current_pick:
 
             if should_break == True:
                 continue
                          
-            if user_guess == serial:
+            elif user_guess == serial:
                 show_update[update_num] = serial
                 mini_count += 1
 
-
             update_num += 1
+
         count += mini_count
         
-        if easy == True:
-            printshow_update(3, show_update, "-------> ")
-        if medium == True:
-            printshow_update(5, show_update, "-------> ")
-        if hard == True:
-            printshow_update(7, show_update, "-------> ")
+        if should_break == False:
+            if easy == True:
+                printshow_update(3, show_update, "-------> ")
+            if medium == True:
+                printshow_update(5, show_update, "-------> ")
+            if hard == True:
+                printshow_update(7, show_update, "-------> ")
 
-        if mini_count > 0:
-            if count == check_len:
-                print("\n\n************* You win!! *************")
+            if mini_count > 0:
+                if count == check_len:
+                    print("\n\n************* You win!! *************")
+                else:
+                    print("\n\nWoaw... You're on fire!!")
+                    print("\nExecution paused :)")
+                    print(HANGMANPICS[6 - tries])
             else:
-                print("\n\nWoaw... You're on fire!!")
-                print("\nExecution paused :)")
+                tries -= 1
+                print("\n\nOops... that letter isn't in the word")
                 print(HANGMANPICS[6 - tries])
-        else:
-            tries -= 1
-            print("\n\nOops... that letter isn't in the word")
-            print(HANGMANPICS[6 - tries])
-            print(f"************* {tries} tries remaining *************")
-            if tries == 0:
-                print(f"\nCorrect Word = {current_pick}")
-                print("\n************* You lose!! *************\n")
-
+                print(f"************* {tries} tries remaining *************")
+                if tries == 0:
+                    print(f"\nCorrect Word = {current_pick}")
+                    print("\n************* You lose!! *************\n")
+        
         if tries > 0 and not count == check_len:
             print("\nGuess another letter: ", end="")
         
