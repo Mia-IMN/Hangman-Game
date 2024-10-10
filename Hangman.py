@@ -1,6 +1,6 @@
 import random
 from Hangman_art import welcome_image, HANGMANPICS
-from Hangman_wordlist import easy_word_list, medium_word_list, hard_word_list
+from Hangman_wordlist import easy_word_dictionary, medium_word_list, hard_word_list
 
 final_score = 0
 
@@ -50,11 +50,13 @@ def play_game():
         medium = False
         hard = False
 
+        want_hint = False
+
         guesses_list = []
 
         # Picks which word list to use based on the user's choice level 
         if level == "easy":
-            current_pick = random.choice(easy_word_list).lower()
+            current_pick = random.choice(list(easy_word_dictionary.keys())).lower()
             show_update = ["_ ", "_ ", "_"]
             printshow_update(3, show_update)
             easy = True
@@ -86,7 +88,7 @@ def play_game():
         # Loop function that makes the game repetitive until win or lose
         while (tries > 0) and not (count == check_len):
             update_num = 0
-            
+
             # Used this to get the input and also fix the issue of user using
             # uppercase during the game
             user_guess = input().lower()
@@ -136,12 +138,12 @@ def play_game():
                             print("\n************* Game Over!! *************")
                             print(f"******* Final Score = {final_score} points *****\n")
                         else: 
-                            print("\n************* Wrong Input!! *************\n")
+                            print("\n~~~~~~~~~~~~~ Wrong Input!! ~~~~~~~~~~~~~\n")
                             print("\n************** Game Over!! *************")
                             print(f"***** Final Score = {final_score} points *****\n")
                     else:
-                        print("\n\nWoaw... You're on fire!!")
-                        print("\nExecution paused :)")
+                        print("\n\n~~~~ Nice!! ~~~~")
+                        print("Execution paused :)")
                         print(HANGMANPICS[6 - tries])
                 else:
                     tries -= 1
@@ -149,13 +151,20 @@ def play_game():
                     print(HANGMANPICS[6 - tries])
                     score -= 10
                     if tries > 0:
-                        print(f"***** -10 points: Expected score after word guess = {score} ****")
-                    print(f"************* {tries} tries remaining *************")
+                        print(f"~~~~~~~~~~~~~~~~~ -10 points ~~~~~~~~~~~~~")
+                        print(f"~~~~~~~~~~~~~ {tries} tries remaining ~~~~~~~~~~~~~")
+                        if tries <= 2:
+                            if final_score > 0:
+                                print("\nHint cost -20 points")
+                                hint = input("Want a hint? (y/n): ")
+                                if hint == "y":
+                                    print(easy_word_dictionary[current_pick])
+                                    final_score -= 20
                     if tries == 0:
                         print(f"\nCorrect Word = {current_pick}")
                         print("\n************* You lose!! *************")
                         print(f"*********** Score = 0 points ***********\n")
-                        print("Do you want to try again? (y/n): ", end="")
+                        print("Do you want to play again? (y/n): ", end="")
                         another_try = input().lower()
                         if another_try == 'y':
                             play_game()
@@ -170,11 +179,7 @@ def play_game():
             if tries > 0 and not count == check_len:
                 print("\nGuess another letter: ", end="")
             
-            
     
-
-
-
     # Block of code that handles game's difficulty level
     if level_difficulty.lower() == "h":
         print("\nDifficulty level set to Hard!\nYou get to guess 7 letter words in 6 trials\n")
